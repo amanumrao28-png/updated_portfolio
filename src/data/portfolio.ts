@@ -1,3 +1,4 @@
+import resumeFile from '../assets/Resume.pdf'
 export const navItems = [
   { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
@@ -10,65 +11,95 @@ export const navItems = [
 ] as const
 
 export const heroStats = [
-  { label: 'Projects', value: '5+', detail: 'MERN and Cybersecurity Projects' },
-  { label: 'Skills', value: '20+', detail: 'Frontend, backend, cybersecurity and tooling' },
-  { label: 'Technologies', value: '18+', detail: 'React, Express, Git, Linux, and Burp Suite' },
-  { label: 'Problems Solved', value: '700+', detail: '200+ LeetCode and 400+ CodeChef problems solved' },
-  { label: 'Certifications', value: '7+', detail: 'CCNA Introduction to Networks and Professional Development Certifications' },
+  {
+    label: 'Projects',
+    value: '5+',
+    detail: 'AI/ML & Full-Stack Projects',
+  },
+  {
+    label: 'Skills',
+    value: '20+',
+    detail: 'AI/ML, Full-Stack & Problem Solving',
+  },
+  {
+    label: 'Technologies',
+    value: '20+',
+    detail: 'Python, React, Node.js, AWS & Docker',
+  },
+  {
+    label: 'Problems Solved',
+    value: '900+',
+    detail: 'LeetCode and CodeChef problems solved',
+  },
+  {
+    label: 'Certifications',
+    value: '7+',
+    detail: 'Professional Development Certifications',
+  },
 ] as const
-
 export const introHighlights = [
   {
     title: 'Who I Am',
-    text: 'I m a B.Tech Computer Science student and MERN Stack Developer passionate about building responsive, scalable and secure web applications while exploring cybersecurity.',
+    text: 'I’m a B.Tech Computer Science student and AI/ML & Full-Stack Developer focused on building practical, scalable and intelligent applications.',
   },
   {
     title: 'My Mission',
-    text: 'To develop impactful web applications, strengthen my full-stack development skills and build a successful career in software engineering and cybersecurity.',
+    text: 'To build impactful applications by combining Machine Learning, modern web technologies and strong problem-solving skills.',
   },
   {
     title: 'My Vision',
-    text: 'To become a skilled software engineer who creates secure, high-performance applications that solve real-world problems.',
+    text: 'To become a skilled software engineer who builds intelligent, reliable and user-focused solutions for real-world problems.',
   },
   {
     title: 'What Drives Me',
-    text: 'Continuous learning, solving challenging problems, writing clean code and improving user experiences motivate me every day.',
+    text: 'I enjoy solving challenging problems, learning new technologies and turning ideas into clean, functional applications.',
   },
   {
     title: 'Learning Journey',
-    text: 'Exploring MERN, secure coding, networking, system design and practical developer tooling through hands-on projects.',
+    text: 'Currently strengthening my skills in Machine Learning, RAG, LLMs, MERN development, AWS and Docker through hands-on projects.',
   },
   {
     title: 'Career Goals',
-    text: 'Earn an internship in software development or cybersecurity and keep raising the bar on engineering craft.',
+    text: 'Looking for an internship where I can contribute to real-world projects, grow as an engineer and gain experience building production-ready applications.',
   },
 ] as const
 
 export const quickFacts = [
   { label: 'Location', value: 'Ghaziabad, Uttar Pradesh' },
-  { label: 'Education', value: 'B.Tech Computer Science Engineering' },
-  { label: 'Languages', value: 'English, Hindi' },
-  { label: 'Availability', value: 'Open for internships' },
-  { label: 'Email', value: 'aman.umrao.dev@gmail.com' },
+  { label: 'Education', value: 'B.Tech CSE • 2024–2028' },
+  { label: 'Focus', value: 'AI/ML & Full-Stack Development' },
+  { label: 'Availability', value: 'Open for Internships' },
+  { label: 'Email', value: 'amanumrao28@gmail.com' },
   { label: 'College', value: 'ABES Engineering College' },
-  { label: 'Degree', value: 'Computer Science Engineering' },
 ] as const
 
 export const educationTimeline = [
   {
     title: 'Bachelor of Technology (B.Tech)',
-    domain: 'Computer Science & Engineering',
-    period: '2024 - 2028',
-    description: 'Focused on full-stack development, problem solving and cybersecurity while building practical projects and strengthening core computer science concepts.',
+    domain: 'ABES Engineering College, Ghaziabad',
+    period: 'Aug 2024 - Present',
+    description:
+      'Pursuing Computer Science and Engineering at ABES Engineering College with a current SGPA of 8.5. Focused on AI/ML, full-stack development, problem solving and modern software technologies.',
     courses: [
-      'Operating Systems',
+      'Data Structures & Algorithms',
+      'Object-Oriented Programming',
       'DBMS',
+      'Operating Systems',
       'Computer Networks',
-      'DSA',
-      'OOP',
-      'Git & GitHub',
       'Web Development',
-      'Cyber Security',
+      'Git & GitHub',
+    ],
+  },
+
+  {
+    title: 'School Education',
+    domain: 'M D B L Inter College, Umri, Kanpur Nagar',
+    period: '2021 - 2023',
+    description:
+      'Completed senior secondary education with 93.4% in Class XII and 92.5% in Class X, building a strong academic foundation for higher studies in Computer Science.',
+    courses: [
+      'Class XII — 93.4%',
+      'Class X — 92.5%',
     ],
   },
 ] as const
@@ -76,151 +107,282 @@ export const educationTimeline = [
 export const skillGroups = [
   {
     name: 'Programming',
-    items: ['C++', 'Java', 'Python', 'JavaScript'],
+    items: ['C++', 'Python', 'JavaScript', 'TypeScript'],
   },
+
+  {
+    name: 'AI / Machine Learning',
+    items: [
+      'Scikit-learn',
+      'LLMs',
+      'RAG',
+      'LangChain',
+      'LangGraph',
+      'AI Agents',
+      'FastAPI',
+    ],
+  },
+
   {
     name: 'Frontend',
-    items: ['HTML', 'CSS', 'React', 'Tailwind', 'Bootstrap'],
+    items: [
+      'HTML5',
+      'CSS3',
+      'JavaScript',
+      'React.js',
+      'Tailwind CSS',
+      'TypeScript',
+    ],
   },
+
   {
     name: 'Backend',
-    items: ['Node.js', 'Express.js'],
+    items: [
+      'Node.js',
+      'Express.js',
+      'REST APIs',
+      'JWT',
+      'RBAC',
+      'MVC Architecture',
+    ],
   },
+
   {
     name: 'Database',
-    items: ['MongoDB', 'MySQL'],
+    items: ['MongoDB', 'Mongoose','PostgreSQL'],
   },
+
   {
-    name: 'Cybersecurity',
-    items: ['Burp Suite', 'Nmap', 'Wireshark', 'Linux', 'OWASP Top 10'],
+    name: 'AWS & Docker',
+    items: [
+      'AWS',
+      'EC2',
+      'EBS',
+      'S3',
+      'IAM',
+      'VPC',
+      'Docker',
+    ],
   },
+
   {
-    name: 'Networking',
-    items: ['CCNA', 'TCP/IP', 'DNS', 'HTTP', 'Routing', 'Switching'],
-  },
-  {
-    name: 'Tools',
-    items: ['Git', 'GitHub', 'Docker', 'VS Code', 'Postman'],
+    name: 'Developer Tools',
+    items: [
+      'Git',
+      'GitHub',
+      'Postman',
+      'Jupyter Notebook',
+      'VS Code',
+      'Kaggle',
+    ],
   },
 ] as const
 
 export const techUniverse = [
-  { name: 'React', x: 14, y: 30, links: ['TypeScript', 'Tailwind', 'Node.js'] },
-  { name: 'TypeScript', x: 26, y: 15, links: ['React', 'Node.js', 'Git'] },
-  { name: 'Node.js', x: 50, y: 12, links: ['Express.js', 'MongoDB', 'Docker'] },
-  { name: 'Express.js', x: 71, y: 34, links: ['Node.js', 'MongoDB', 'Postman'] },
-  { name: 'MongoDB', x: 52, y: 74, links: ['Express.js', 'React', 'Postman'] },
-  { name: 'Tailwind', x: 28, y: 43, links: ['React', 'CSS', 'Framer Motion'] },
-  { name: 'Git', x: 12, y: 58, links: ['GitHub', 'Docker', 'VS Code'] },
-  { name: 'Docker', x: 24, y: 74, links: ['Node.js', 'Git', 'Linux'] },
-  { name: 'Linux', x: 84, y: 70, links: ['Docker', 'Wireshark', 'Nmap'] },
-  { name: 'Cybersecurity', x: 53, y: 88, links: ['Burp Suite', 'Nmap', 'OWASP Top 10'] },
-  { name: 'Networking', x: 77, y: 17, links: ['TCP/IP', 'DNS', 'HTTP'] },
-  { name: 'Security', x: 84, y: 49, links: ['Cybersecurity', 'Networking', 'Linux'] },
+  {
+    name: 'Python',
+    x: 14,
+    y: 28,
+    links: ['Machine Learning', 'LLMs', 'RAG', 'Tailwind CSS', 'AWS'],
+  },
+  {
+    name: 'Machine Learning',
+    x: 26,
+    y: 12,
+    links: ['Python', 'TypeScript', 'LLMs', 'RAG'],
+  },
+  {
+    name: 'TypeScript',
+    x: 50,
+    y: 12,
+    links: ['Machine Learning', 'React', 'Node.js', 'Tailwind CSS'],
+  },
+  {
+    name: 'Node.js',
+    x: 74,
+    y: 12,
+    links: ['TypeScript', 'React', 'Express.js', 'MongoDB', 'Docker'],
+  },
+  {
+    name: 'React',
+    x: 86,
+    y: 28,
+    links: ['TypeScript', 'Tailwind CSS', 'Node.js'],
+  },
+  {
+    name: 'Tailwind CSS',
+    x: 15,
+    y: 50,
+    links: ['React', 'TypeScript', 'Python'],
+  },
+  {
+    name: 'Express.js',
+    x: 85,
+    y: 50,
+    links: ['Node.js', 'MongoDB'],
+  },
+  {
+    name: 'LLMs',
+    x: 18,
+    y: 70,
+    links: ['Python', 'Machine Learning', 'RAG'],
+  },
+  {
+    name: 'Docker',
+    x: 82,
+    y: 70,
+    links: ['Node.js', 'AWS'],
+  },
+  {
+    name: 'AWS',
+    x: 30,
+    y: 84,
+    links: ['Docker', 'MongoDB', 'Python'],
+  },
+  {
+    name: 'MongoDB',
+    x: 50,
+    y: 84,
+    links: ['Node.js', 'Express.js', 'RAG', 'AWS'],
+  },
+  {
+    name: 'RAG',
+    x: 70,
+    y: 84,
+    links: ['Python', 'Machine Learning', 'LLMs', 'MongoDB'],
+  },
 ] as const
 
 export const projects = [
   {
+    title: 'Bank Transaction System',
+    category: 'Backend',
+    description:
+      'Secure banking backend supporting accounts, fund transfers and transaction history through RESTful APIs.',
+    problem:
+      'Build a reliable backend for managing accounts, transfers and transaction records while maintaining secure authentication and data consistency.',
+    solution:
+      'Developed a modular Node.js and Express.js backend with JWT authentication, RESTful APIs and MongoDB/Mongoose data models.',
+    technology: [
+      'Node.js',
+      'Express.js',
+      'MongoDB',
+      'Mongoose',
+      'JWT',
+      'REST API',
+    ],
+    features: [
+      '4+ backend modules',
+      '15+ RESTful endpoints',
+      'JWT authentication',
+      'Transaction history',
+      'MVC architecture',
+    ],
+    challenges: [
+      'Maintaining data consistency during fund transfers',
+      'Designing a modular backend architecture',
+    ],
+    github: 'https://github.com/amanumrao28-png/Bank_Transaction_System.git',
+    demo: '',
+  },
+
+  {
+    title: 'Spotify Backend',
+    category: 'Backend',
+    description:
+      'Scalable music backend with authentication, role-based access and RESTful APIs for music management.',
+    problem:
+      'Create a backend system that supports different user roles and provides structured management of users, albums and songs.',
+    solution:
+      'Built a Node.js and Express.js backend using JWT authentication, RBAC, MongoDB and Mongoose schema relationships.',
+    technology: [
+      'Node.js',
+      'Express.js',
+      'MongoDB',
+      'JWT',
+      'RBAC',
+      'Multer',
+    ],
+    features: [
+      'JWT authentication',
+      'Admin & user roles',
+      '10+ RESTful endpoints',
+      'CRUD APIs',
+      'Audio & cover uploads',
+    ],
+    challenges: [
+      'Implementing role-based access control',
+      'Managing relationships between users, albums and songs',
+    ],
+    github: 'https://github.com/amanumrao28-png/Spotify-Backend.git',
+    demo: '',
+  },
+
+  {
     title: 'Netflix Clone',
-    category: 'Web App',
-    description: 'Streaming UI with responsive browsing and clean media cards.',
-    problem: 'Create a familiar entertainment UI that still feels fast, premium and easy to navigate.',
-    solution: 'Designed a modular layout with strong visual hierarchy and reusable media cards.',
-    technology: ['React', 'Tailwind', 'API Integration'],
-    features: ['Hero banner', 'Category rails', 'Responsive cards', 'Trailer-ready structure'],
-    challenges: ['Balancing visual density with readability', 'Keeping interactions lightweight'],
-    github: 'https://github.com/amanumrao28-png/netflix-clone',
-    demo: 'https://amanumrao.dev/netflix-clone',
-  },
-  {
-    title: 'Resume Builder',
-    category: 'Productivity',
-    description: 'Resume editor with live preview and export-focused flow.',
-    problem: 'Make resume creation approachable without sacrificing polish or control.',
-    solution: 'Used guided sections and preview-first workflows to reduce friction.',
-    technology: ['React', 'Node.js', 'PDF Export'],
-    features: ['Live preview', 'Section control', 'Template guidance', 'Export flow'],
-    challenges: ['Supporting a flexible content model', 'Keeping the layout print-friendly'],
-    github: 'https://github.com/amanumrao28-png/resume-builder',
-    demo: 'https://amanumrao.dev/resume-builder',
-  },
-  {
-    title: 'Complaint Management Portal',
-    category: 'Dashboard',
-    description: 'Complaint tracking dashboard with ownership and status clarity.',
-    problem: 'Teams need an organized intake system that avoids lost requests and unclear responsibility.',
-    solution: 'Built status-based workflows, searchable records and quick action pathways.',
-    technology: ['MERN Stack', 'Role-based Access', 'MongoDB'],
-    features: ['Case tracking', 'Role views', 'Status filters', 'Audit-friendly records'],
-    challenges: ['Designing a scalable workflow model', 'Keeping status transitions obvious'],
-    github: 'https://github.com/amanumrao28-png/complaint-portal',
-    demo: 'https://amanumrao.dev/complaint-portal',
-  },
-  {
-    title: 'AI Fitness Tracker',
-    category: 'AI',
-    description: 'Fitness dashboard for goals, progress and daily insights.',
-    problem: 'Make health tracking useful instead of noisy or overwhelming.',
-    solution: 'Focused on high-signal metrics, simple nudges and an encouraging visual rhythm.',
-    technology: ['React', 'Charts', 'AI Concepts'],
-    features: ['Progress insights', 'Daily goal cards', 'Habit focus', 'Friendly feedback'],
-    challenges: ['Visualizing progress in a compact layout', 'Keeping the interface motivating'],
-    github: 'https://github.com/amanumrao28-png/ai-fitness-tracker',
-    demo: 'https://amanumrao.dev/ai-fitness-tracker',
-  },
-  {
-    title: 'Portfolio Website',
-    category: 'Portfolio',
-    description: 'Modern portfolio with recruiter-focused sections and motion.',
-    problem: 'Present technical depth without feeling generic or overcrowded.',
-    solution: 'Created a dashboard-style narrative with modular sections and refined interactions.',
-    technology: ['React', 'Motion', 'Design Systems'],
-    features: ['Glass navbar', 'Animated sections', 'Mission modules', 'Responsive system'],
-    challenges: ['Making the design feel premium while remaining fast'],
-    github: 'https://github.com/amanumrao28-png/portfolio-website',
-    demo: 'https://amanumrao.dev',
-  },
-  {
-    title: 'Bug Bounty Toolkit',
-    category: 'Security',
-    description: 'Security workflow toolkit for recon, notes and triage.',
-    problem: 'Security work needs structure, speed and repeatable note capture.',
-    solution: 'Organized common recon tasks into a streamlined and reusable toolkit.',
-    technology: ['Burp Suite', 'Nmap', 'Linux'],
-    features: ['Recon checklists', 'Triage notes', 'Tool shortcuts', 'Session logging'],
-    challenges: ['Balancing depth with speed of use', 'Keeping the interface distraction-free'],
-    github: 'https://github.com/amanumrao28-png/bug-bounty-toolkit',
-    demo: 'https://amanumrao.dev/bug-bounty-toolkit',
+    category: 'Frontend',
+    description:
+      'Responsive Netflix-inspired interface featuring structured navigation, hero content and movie carousels.',
+    problem:
+      'Recreate a familiar streaming interface while maintaining responsive layouts across different screen sizes.',
+    solution:
+      'Built a responsive frontend using HTML5, CSS3 and JavaScript with CSS Grid, Flexbox and media queries.',
+    technology: [
+      'HTML5',
+      'CSS3',
+      'JavaScript',
+    ],
+    features: [
+      'Responsive navbar',
+      'Hero banner',
+      'Movie carousels',
+      'Responsive layout',
+      'Mobile, tablet & desktop support',
+    ],
+    challenges: [
+      'Maintaining consistent layouts across breakpoints',
+      'Building a responsive streaming-style interface',
+    ],
+    github: 'https://github.com/amanumrao28-png/Netflix-Clone.git',
+    demo: '',
   },
 ] as const
-
 export const achievements = [
-  { label: 'LeetCode Problems', value: 150, suffix: '+', iconKey: 'code' },
-  { label: 'CodeChef Problems', value: 450, suffix: '+', iconKey: 'trophy' },
-  { label: 'CCNA Completed', value: 1, suffix: '', iconKey: 'network' },
-  { label: 'MERN Stack Projects', value: 6, suffix: '+', iconKey: 'layers' },
-  { label: 'Open Source Learning', value: 12, suffix: '+', iconKey: 'github' },
-  { label: 'Cybersecurity Labs', value: 20, suffix: '+', iconKey: 'shield' },
-] as const
-
-export const certifications = [
   {
-    title: 'Full Stack Web Development',
-    issuer: 'Self-led / Project Based',
-    summary: 'Hands-on exploration across frontend architecture, backend APIs and deployment thinking.',
-    fileName: 'full-stack-learning-preview.pdf',
+    label: 'LeetCode Problems',
+    value: 350,
+    suffix: '+',
+    iconKey: 'code',
   },
   {
-    title: 'Cybersecurity Foundations',
-    issuer: 'Security Lab Practice',
-    summary: 'Practiced scanning, interception, OWASP awareness and disciplined remediation workflows.',
-    fileName: 'cybersecurity-foundations-preview.pdf',
+    label: 'Coding Problems Solved',
+    value: 900,
+    suffix: '+',
+    iconKey: 'trophy',
   },
   {
-    title: 'Networking Fundamentals',
-    issuer: 'CCNA Track',
-    summary: 'Studied TCP/IP, routing, switching, DNS and HTTP through structured network learning.',
-    fileName: 'networking-fundamentals-preview.pdf',
+    label: 'CodeChef Rating',
+    value: 1,
+    suffix: '★',
+    iconKey: 'trophy',
+  },
+  {
+    label: 'HackerRank Rating',
+    value: 5,
+    suffix: '★',
+    iconKey: 'code',
+  },
+  {
+    label: 'Hackathons Participated',
+    value: 4,
+    suffix: '+',
+    iconKey: 'layers',
+  },
+  {
+    label: 'AWS Builder Group',
+    value: 1,
+    suffix: '',
+    iconKey: 'github',
   },
 ] as const
 
@@ -230,54 +392,52 @@ export const profiles = [
     handle: 'amanumrao28-png',
     href: 'https://github.com/amanumrao28-png',
     logo: 'https://cdn.simpleicons.org/github/181717',
-    stats: 'Public repos, code experiments and project history',
+    stats: 'Projects, open-source work and development activity',
   },
   {
     name: 'LeetCode',
-    handle: 'amanumrao',
-    href: 'https://leetcode.com/u/amanumrao/',
+    handle: 'EKv6KzwO7V',
+    href: 'https://leetcode.com/u/EKv6KzwO7V/',
     logo: 'https://cdn.simpleicons.org/leetcode/F89F1B',
-    stats: 'DSA practice and problem solving rhythm',
+    stats: 'DSA practice and problem solving',
   },
   {
     name: 'CodeChef',
-    handle: 'amanumrao',
-    href: 'https://www.codechef.com/users/amanumrao',
+    handle: 'soon_otters_83',
+    href: 'https://www.codechef.com/users/soon_otters_83',
     logo: 'https://cdn.simpleicons.org/codechef/5B4638',
-    stats: 'Competitive programming progress',
+    stats: 'Competitive programming and algorithmic practice',
+  },
+  {
+    name: 'HackerRank',
+    handle: 'amanumrao28',
+    href: 'https://www.hackerrank.com/profile/amanumrao28',
+    logo: 'https://cdn.simpleicons.org/hackerrank/00EA64',
+    stats: 'Programming practice and technical skill development',
   },
   {
     name: 'LinkedIn',
     handle: 'aman-umrao',
     href: 'https://www.linkedin.com/in/aman-umrao/',
     logo: 'https://cdn.simpleicons.org/linkedin/0A66C2',
-    stats: 'Professional updates and internship readiness',
+    stats: 'Professional updates and career opportunities',
   },
   {
-    name: 'TryHackMe',
+    name: 'Kaggle',
     handle: 'amanumrao',
-    href: 'https://tryhackme.com/p/amanumrao',
-    logo: 'https://cdn.simpleicons.org/tryhackme/212C42',
-    stats: 'Security labs and defensive learning',
-  },
-  {
-    name: 'Hack The Box',
-    handle: 'amanumrao',
-    href: 'https://www.hackthebox.com/',
-    logo: 'https://cdn.simpleicons.org/hackthebox/9FEF00',
-    stats: 'Hands-on security exploration',
+    href: 'https://www.kaggle.com/amanumrao',
+    logo: 'https://cdn.simpleicons.org/kaggle/20BEFF',
+    stats: 'Machine Learning, datasets and AI/ML practice',
   },
 ] as const
 
 export const contactLinks = {
-  email: 'aman.umrao.dev@gmail.com',
+  email: 'amanumrao28@gmail.com',
   linkedin: 'https://www.linkedin.com/in/aman-umrao/',
   github: 'https://github.com/amanumrao28-png',
-  phone: 'Available on request',
   location: 'Ghaziabad, Uttar Pradesh',
 } as const
 
-// Replace these with the real headshot, resume file and live profile URLs when final assets are ready.
 export const avatarFallback = 'AU'
-export const resumeDownloadLabel = 'Aman_Umrao_Resume.txt'
+export const resume = resumeFile
 export const githubUsername = 'amanumrao28-png'
