@@ -1,10 +1,14 @@
+import emailjs from '@emailjs/browser'
+import profilePhoto from './assets/profile.jpeg'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   Activity,
+  AlertCircle,
   ArrowRight,
   ArrowUpRight,
   BadgeCheck,
   BriefcaseBusiness,
+  CheckCircle2,
   ChevronRight,
   Code2,
   Command,
@@ -12,14 +16,12 @@ import {
   FileText,
   FolderGit2,
   Globe,
-  GraduationCap,
   Layers3,
   Mail,
   MapPin,
   Menu,
   MoonStar,
   Network,
-  Phone,
   Printer,
   Radar,
   Send,
@@ -31,13 +33,12 @@ import {
   X,
   Zap,
 } from 'lucide-react'
-import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
-import missionIllustration from './assets/hero.png'
+import {  type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+
 import {
   achievements,
   avatarFallback,
   contactLinks,
-  certifications,
   educationTimeline,
   githubUsername,
   heroStats,
@@ -46,14 +47,17 @@ import {
   profiles,
   projects,
   quickFacts,
-  resumeDownloadLabel,
+  resume,
   skillGroups,
   techUniverse,
 } from './data/portfolio'
 import './App.css'
 
 type ThemeMode = 'light' | 'dark'
-type ToastTone = 'success' | 'info'
+type ToastTone = 'success' | 'info' | 'error'
+
+const isThemeMode = (value: string | null): value is ThemeMode =>
+  value === 'light' || value === 'dark'
 
 type GitHubSnapshot = {
   repos: number
@@ -72,9 +76,9 @@ type GitHubSnapshot = {
 }
 
 const typingPhrases = [
+  'AI/ML Developer',
   'Full Stack MERN Developer',
-  'Cybersecurity Enthusiast',
-  'Networking Learner',
+  'AI Application Builder',
   'Problem Solver',
 ]
 
@@ -94,21 +98,6 @@ const LinkedInLogo = () => (
   </svg>
 )
 
-const certificationVisuals = [
-  { label: 'Build Track', focus: 'Frontend + APIs', Icon: Code2 },
-  { label: 'Security Track', focus: 'OWASP + Labs', Icon: ShieldCheck },
-  { label: 'Network Track', focus: 'TCP/IP + Routing', Icon: Network },
-] as const
-
-const projectVisuals = {
-  'Web App': { label: 'Interface Build', Icon: Code2 },
-  Productivity: { label: 'Workflow Tool', Icon: FileText },
-  Dashboard: { label: 'Ops System', Icon: Activity },
-  AI: { label: 'Insight Layer', Icon: Sparkles },
-  Portfolio: { label: 'Personal Brand', Icon: BriefcaseBusiness },
-  Security: { label: 'Security Lab', Icon: ShieldCheck },
-} as const
-
 const iconMap = {
   code: Code2,
   trophy: Trophy,
@@ -118,13 +107,53 @@ const iconMap = {
   shield: ShieldCheck,
 } as const
 
+const lineForLink = (nodeX: number, nodeY: number, targetX: number, targetY: number) => {
+  const deltaX = targetX - nodeX
+  const deltaY = targetY - nodeY
+  const length = Math.hypot(deltaX, deltaY)
+  const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
+
+  return {
+    left: `${nodeX}%`,
+    top: `${nodeY}%`,
+    width: `${length}%`,
+    transform: `rotate(${angle}deg)`,
+  }
+}
+
+const techGraphEdges = techUniverse.flatMap((node, sourceIndex) =>
+  node.links
+    .filter((link) => {
+      const targetIndex = techUniverse.findIndex((entry) => entry.name === link)
+      return sourceIndex < targetIndex
+    })
+    .map((link) => {
+      const target = techUniverse.find((entry) => entry.name === link)
+      if (!target) return null
+      return {
+        key: `${node.name}-${target.name}`,
+        source: node.name,
+        target: target.name,
+        sourceLinks: node.links,
+        targetLinks: target.links,
+        style: lineForLink(node.x, node.y, target.x, target.y),
+      }
+    })
+    .filter((edge): edge is NonNullable<typeof edge> => edge !== null),
+)
+
 function App() {
   const prefersReducedMotion = useReducedMotion()
-  const [theme, setTheme] = useState<ThemeMode>('light')
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    if (typeof window !== 'undefined') {
+      const raw = window.localStorage.getItem('aman-theme')
+      if (isThemeMode(raw)) return raw
+    }
+    return 'dark'
+  })
   const [menuOpen, setMenuOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [selectedCertification, setSelectedCertification] = useState<(typeof certifications)[number] | null>(null)
   const [toast, setToast] = useState<{ message: string; tone: ToastTone } | null>(null)
   const [booted, setBooted] = useState(false)
   const [typingText, setTypingText] = useState('')
@@ -132,15 +161,17 @@ function App() {
   const [activeTech, setActiveTech] = useState<string | null>(null)
   const [githubSnapshot, setGithubSnapshot] = useState<GitHubSnapshot | null>(null)
   const [githubUnavailable, setGithubUnavailable] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 50, y: 30 })
-  const heroRef = useRef<HTMLElement | null>(null)
+  const spotlightRef = useRef<HTMLDivElement | null>(null)
+  const resumeIframeRef = useRef<HTMLIFrameElement | null>(null)
   const typingTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem('aman-theme') as ThemeMode | null
-    const preferredTheme: ThemeMode =
-      storedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    const rawStoredTheme = window.localStorage.getItem('aman-theme')
+    const storedTheme = isThemeMode(rawStoredTheme) ? rawStoredTheme : null
+    const preferredTheme: ThemeMode = storedTheme ?? 'dark'
     setTheme(preferredTheme)
+    document.documentElement.dataset.theme = preferredTheme
+    document.body.dataset.theme = preferredTheme
     setBooted(true)
   }, [])
 
@@ -154,6 +185,19 @@ function App() {
     document.title = 'Aman Umrao | Mission Control Portfolio'
   }, [])
 
+  const commandPaletteRef = useRef<HTMLDivElement | null>(null)
+  const lastActiveElementRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (commandOpen) {
+      lastActiveElementRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      const firstButton = commandPaletteRef.current?.querySelector('button')
+      firstButton?.focus()
+    } else if (lastActiveElementRef.current) {
+      lastActiveElementRef.current.focus()
+    }
+  }, [commandOpen])
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
@@ -164,7 +208,6 @@ function App() {
       if (event.key === 'Escape') {
         setCommandOpen(false)
         setMenuOpen(false)
-        setSelectedCertification(null)
       }
     }
 
@@ -199,9 +242,12 @@ function App() {
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      const x = (event.clientX / window.innerWidth) * 100
-      const y = (event.clientY / window.innerHeight) * 100
-      setMousePosition({ x, y })
+      if (spotlightRef.current) {
+        const x = (event.clientX / window.innerWidth) * 100
+        const y = (event.clientY / window.innerHeight) * 100
+        spotlightRef.current.style.left = `${x}%`
+        spotlightRef.current.style.top = `${y}%`
+      }
     }
 
     window.addEventListener('mousemove', handleMouseMove)
@@ -209,6 +255,8 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const loadGitHub = async () => {
       const githubLinks = {
         profile: `https://github.com/${githubUsername}`,
@@ -254,9 +302,11 @@ function App() {
         const [profileResponse, reposResponse] = await Promise.all([
           fetch(`https://api.github.com/users/${githubUsername}`, {
             headers: { Accept: 'application/vnd.github+json' },
+            signal: controller.signal,
           }),
           fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100&sort=updated`, {
             headers: { Accept: 'application/vnd.github+json' },
+            signal: controller.signal,
           }),
         ])
 
@@ -276,6 +326,7 @@ function App() {
 
         const events = await fetch(`https://api.github.com/users/${githubUsername}/events/public?per_page=30`, {
           headers: { Accept: 'application/vnd.github+json' },
+          signal: controller.signal,
         })
           .then((response) => (response.ok ? response.json() : []))
           .catch(() => []) as Array<{
@@ -326,24 +377,32 @@ function App() {
           return Math.abs(Math.round(Math.sin(base) * 4))
         })
 
-        setGithubSnapshot({
-          repos: profile.public_repos ?? activeRepos.length,
-          stars,
-          followers: profile.followers ?? 0,
-          topLanguages,
-          pinnedProjects,
-          recentCommits,
-          contributionHeat,
-          links: githubLinks,
-        })
-        setGithubUnavailable(false)
+        if (!controller.signal.aborted) {
+          setGithubSnapshot({
+            repos: profile.public_repos ?? activeRepos.length,
+            stars,
+            followers: profile.followers ?? 0,
+            topLanguages,
+            pinnedProjects,
+            recentCommits,
+            contributionHeat,
+            links: githubLinks,
+          })
+          setGithubUnavailable(false)
+        }
       } catch {
-        setGithubSnapshot(verifiedFallback)
-        setGithubUnavailable(false)
+        if (!controller.signal.aborted) {
+          setGithubSnapshot(verifiedFallback)
+          setGithubUnavailable(true)
+        }
       }
     }
 
     loadGitHub()
+
+    return () => {
+      controller.abort()
+    }
   }, [])
 
   useEffect(() => {
@@ -360,10 +419,13 @@ function App() {
     [],
   )
 
-  const filteredProjects =
-    selectedCategory === 'All'
-      ? projects
-      : projects.filter((project) => project.category === selectedCategory)
+  const filteredProjects = useMemo(
+    () =>
+      selectedCategory === 'All'
+        ? projects
+        : projects.filter((project) => project.category === selectedCategory),
+    [selectedCategory],
+  )
 
   const setMessage = (message: string, tone: ToastTone = 'info') => {
     setToast({ message, tone })
@@ -380,28 +442,75 @@ function App() {
   }
 
   const downloadResume = () => {
-    const resumeText = `AMAN UMRAO\nMission Control Resume\n\nSummary\nB.Tech Computer Science Engineering student focused on full-stack development, cybersecurity fundamentals and polished product delivery.\n\nCore Skills\nReact, TypeScript, Node.js, Express.js, MongoDB, MySQL, Tailwind CSS, Git, Docker, Burp Suite, Nmap, Wireshark, Linux, Networking\n\nProjects\n- Netflix Clone\n- Resume Builder\n- Complaint Management Portal\n- AI Fitness Tracker\n- Portfolio Website\n- Bug Bounty Toolkit\n\nEducation\nABES Engineering College | B.Tech CSE | 2024 - 2028\n\nContact\n${contactLinks.email} | ${contactLinks.linkedin}`
-    const blob = new Blob([resumeText], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = resumeDownloadLabel
-    anchor.click()
-    URL.revokeObjectURL(url)
-    setMessage('Resume download prepared.', 'success')
+    const link = document.createElement('a')
+
+    link.href = resume
+    link.download = 'Aman_Umrao_Resume.pdf'
+
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    setMessage('Resume downloaded successfully.', 'success')
   }
 
   const printResume = () => {
-    window.print()
-    setMessage('Print dialog opened.', 'success')
+    try {
+      if (resumeIframeRef.current?.contentWindow) {
+        resumeIframeRef.current.contentWindow.focus()
+        resumeIframeRef.current.contentWindow.print()
+        return
+      }
+    } catch {
+      // Fall back to window.open if iframe printing is restricted
+    }
+
+    const printWindow = window.open(resume, '_blank')
+
+    if (!printWindow) {
+      setMessage('Please allow pop-ups to print the resume.', 'error')
+      return
+    }
+
+    printWindow.onload = () => {
+      printWindow.print()
+    }
   }
 
-  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const form = event.currentTarget
+  const handleFormSubmit = async (event: any) => {
+  event.preventDefault()
+
+  const form = event.currentTarget
+
+  try {
+    await emailjs.sendForm(
+      'service_7af7gxk',
+      'template_cojyapi',
+      form,
+      {
+        publicKey: 'iYGyT_jOQcDwJEeC9',
+      }
+    )
+
     form.reset()
-    setMessage('Your message is ready to send. Connect this form to an email service.', 'success')
+    setMessage(
+      'Message sent successfully! I will get back to you soon.',
+      'success'
+    )
+  } catch (error) {
+    console.error('Email sending failed:', error)
+
+     if (error && typeof error === 'object') {
+    console.error('Status:', (error as { status?: number }).status)
+    console.error('Text:', (error as { text?: string }).text)
   }
+
+    setMessage(
+      'Failed to send message. Please try again.',
+      'error'
+    )
+  }
+}
 
   const updateSection = (sectionId: string) => {
     if (sectionId === 'resume') {
@@ -415,20 +524,6 @@ function App() {
     }
 
     scrollToSection(sectionId)
-  }
-
-  const lineForLink = (nodeX: number, nodeY: number, targetX: number, targetY: number) => {
-    const deltaX = targetX - nodeX
-    const deltaY = targetY - nodeY
-    const length = Math.hypot(deltaX, deltaY)
-    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI)
-
-    return {
-      left: `${nodeX}%`,
-      top: `${nodeY}%`,
-      width: `${length}%`,
-      transform: `rotate(${angle}deg)`,
-    }
   }
 
   return (
@@ -473,13 +568,10 @@ function App() {
           <button className="icon-button" onClick={toggleTheme} aria-label="Toggle color theme">
             {theme === 'light' ? <MoonStar size={18} /> : <SunMedium size={18} />}
           </button>
-          <button className="icon-button desktop-only" onClick={() => setCommandOpen(true)} aria-label="Open command palette">
+          <button className="icon-button desktop-only" onClick={() => setCommandOpen(true)} aria-label="Open command palette" aria-haspopup="dialog" aria-expanded={commandOpen}>
             <Command size={18} />
           </button>
-          <button className="resume-pill desktop-only" onClick={() => scrollToSection('resume')}>
-            Resume
-          </button>
-          <button className="icon-button mobile-only" onClick={() => setMenuOpen((current) => !current)} aria-label="Toggle navigation menu">
+          <button className="icon-button mobile-only" onClick={() => setMenuOpen((current) => !current)} aria-label="Toggle navigation menu" aria-expanded={menuOpen}>
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
@@ -488,7 +580,6 @@ function App() {
       <main>
         <motion.section
           id="home"
-          ref={heroRef}
           className="hero section-grid"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -499,9 +590,6 @@ function App() {
               <span className="status-badge success">
                 <span className="status-dot" /> Available for Internship
               </span>
-              <button className="ghost-chip" onClick={() => setCommandOpen(true)}>
-                <Command size={14} /> Open Command Palette
-              </button>
             </div>
 
             <div className="identity-row">
@@ -522,7 +610,7 @@ function App() {
             </div>
 
             <p className="hero-description">
-            AI Full-Stack Developer and Problem Solver focused on building scalable, intelligent applications using modern full-stack technologies, Machine Learning, LLMs, RAG, and Agentic AI.
+              AI/ML & Full-Stack Developer and Problem Solver focused on building intelligent applications using Machine Learning, RAG, LLMs, and modern full-stack technologies.
             </p>
 
             <div className="hero-actions">
@@ -540,20 +628,30 @@ function App() {
             <div className="hero-mini-grid">
               <div className="mini-stat accent">
                 <span>Specialization</span>
-                <strong>MERN Stack Development
-&
-Cybersecurity</strong>
+                <strong>
+                  AI/ML & Full-Stack
+                  Development
+                </strong>
               </div>
+
               <div className="mini-stat">
                 <span>Tech Stack</span>
-                <strong>React • Node.js • Express
-MongoDB • Linux</strong>
+                <strong>
+                  React • Node.js • Express
+                  <br />
+                  MongoDB • Python
+                </strong>
               </div>
+
               <div className="mini-stat">
                 <span>Work Style</span>
-                <strong>Clean Code,
-Problem Solving,
-Continuous Learning</strong>
+                <strong>
+                  Problem Solving,
+                  <br />
+                  Analytical Thinking,
+                  <br />
+                  Continuous Improvement
+                </strong>
               </div>
             </div>
           </div>
@@ -571,13 +669,19 @@ Continuous Learning</strong>
               </div>
 
               <div className="hero-visual-panel">
-                <img src={missionIllustration} alt="Mission control illustration" />
+                <div className="profile-photo-wrapper">
+                  <img
+                    src={profilePhoto}
+                    alt="Aman Umrao"
+                    className="profile-photo"
+                  />
+                </div>
                 <div>
-    <strong>Building Intelligent AI Applications</strong>
-  <p>
-    AI Full-Stack Developer & Problem Solver building scalable, intelligent applications using LLMs, RAG, Agentic AI, and modern full-stack technologies.
-  </p>
-</div>
+                  <strong>Building Intelligent AI Applications</strong>
+                  <p>
+                    AI/ML & Full-Stack Developer building practical applications with Machine Learning, RAG, LLMs, and modern web technologies.
+                  </p>
+                </div>
               </div>
 
               <div className="dashboard-grid">
@@ -585,9 +689,10 @@ Continuous Learning</strong>
                   <motion.article
                     key={metric.label}
                     className={`dashboard-card ${index === 0 ? 'tall' : ''}`}
-                    initial={{ opacity: 0, y: 12 }}
+                    initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * index, duration: 0.45 }}
+                    whileHover={prefersReducedMotion ? undefined : { y: -4, scale: 1.01 }}
+                    transition={{ delay: prefersReducedMotion ? 0 : 0.1 * index, duration: prefersReducedMotion ? 0 : 0.45 }}
                   >
                     <span>{metric.label}</span>
                     <strong>{metric.value}</strong>
@@ -599,16 +704,16 @@ Continuous Learning</strong>
               <div className="floating-notes">
                 <motion.div
                   className="note-card note-left"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ repeat: Infinity, duration: 5.5, ease: 'easeInOut' }}
+                  animate={prefersReducedMotion ? { y: 0 } : { y: [0, -6, 0] }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { repeat: Infinity, duration: 4.8, ease: 'easeInOut' }}
                 >
                   <Radar size={16} />
                   <span>Open for Internship</span>
                 </motion.div>
                 <motion.div
                   className="note-card note-right"
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ repeat: Infinity, duration: 6.2, ease: 'easeInOut' }}
+                  animate={prefersReducedMotion ? { y: 0 } : { y: [0, -6, 0] }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { repeat: Infinity, duration: 4.8, ease: 'easeInOut', delay: 0.8 }}
                 >
                   <Target size={16} />
                   <span>Always Learning</span>
@@ -628,6 +733,7 @@ Continuous Learning</strong>
                 initial="hidden"
                 whileInView="visible"
                 viewport={viewport}
+                whileHover={prefersReducedMotion ? undefined : { y: -5, scale: 1.01 }}
                 transition={{ delay: prefersReducedMotion ? 0 : index * 0.08, duration: 0.55 }}
               >
                 <span className="card-kicker">{item.title}</span>
@@ -657,8 +763,9 @@ Continuous Learning</strong>
                   <ChevronRight size={18} />
                 </summary>
                 <p>
-                  I prefer clear systems, reusable components and interfaces that feel calm under pressure. I care
-                  about the details that make a product feel trustworthy.
+                  I focus on writing clean, maintainable code and building reusable
+                  components. I approach problems systematically, prioritize usability,
+                  and continuously improve my solutions through feedback and iteration.
                 </p>
               </details>
               <details className="mission-accordion">
@@ -667,7 +774,8 @@ Continuous Learning</strong>
                   <ChevronRight size={18} />
                 </summary>
                 <p>
-                  Deeper secure coding patterns, API hardening, scalable React architecture and stronger deployment
+                  Deepening my knowledge of Machine Learning, RAG and LLM applications,
+                  while improving full-stack architecture, AWS deployment and Docker
                   workflows.
                 </p>
               </details>
@@ -677,8 +785,9 @@ Continuous Learning</strong>
                   <ChevronRight size={18} />
                 </summary>
                 <p>
-                  The structure is intentionally dashboard-like so a recruiter can scan skills, projects and proof of
-                  work without digging through a generic template.
+                  I designed this portfolio to showcase more than just technologies.
+                  It highlights my projects, problem-solving journey, technical skills
+                  and practical work in a way that is easy for recruiters to explore.
                 </p>
               </details>
             </div>
@@ -686,8 +795,8 @@ Continuous Learning</strong>
 
           <div className="timeline-panel glass-card">
             <div className="section-subhead">
-              <span>Education</span>
-              <strong>ABES Engineering College, Ghaziabad</strong>
+              <span>Education Journey</span>
+              <strong>Academic Background</strong>
             </div>
 
             <div className="timeline">
@@ -724,7 +833,7 @@ Continuous Learning</strong>
                 <motion.article
                   key={group.name}
                   className="glass-card skill-card"
-                  whileHover={{ y: -6, scale: 1.01 }}
+                  whileHover={prefersReducedMotion ? undefined : { y: -6, scale: 1.01 }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className="skill-card-head">
@@ -743,49 +852,32 @@ Continuous Learning</strong>
             </div>
 
             <div className="universe-card glass-card">
-              <div className="section-subhead">
-                <span>Interactive Technology Universe</span>
-                <strong>Hover a node to highlight its network</strong>
-              </div>
+              <h3 className="universe-title">Technology Stack</h3>
 
               <div className="tech-universe" onMouseLeave={() => setActiveTech(null)}>
-                {techUniverse.map((node) =>
-                  node.links
-                    .filter((link) => {
-                      const sourceIndex = techUniverse.findIndex((entry) => entry.name === node.name)
-                      const targetIndex = techUniverse.findIndex((entry) => entry.name === link)
-                      return sourceIndex < targetIndex
-                    })
-                    .map((link) => {
-                      const target = techUniverse.find((entry) => entry.name === link)
-                      if (!target) {
-                        return null
-                      }
+                {techGraphEdges.map((edge) => {
+                  const highlighted = Boolean(
+                    activeTech &&
+                    (activeTech === edge.source ||
+                      activeTech === edge.target ||
+                      edge.sourceLinks.some((link) => link === activeTech) ||
+                      edge.targetLinks.some((link) => link === activeTech)),
+                  )
 
-                      const line = lineForLink(node.x, node.y, target.x, target.y)
-                      const highlighted = Boolean(
-                        activeTech &&
-                          (activeTech === node.name ||
-                            activeTech === target.name ||
-                            node.links.some((link) => link === activeTech) ||
-                            target.links.some((link) => link === activeTech)),
-                      )
-
-                      return (
-                        <div
-                          key={`${node.name}-${target.name}`}
-                          className={`tech-line ${highlighted ? 'active' : ''}`}
-                          style={line}
-                          aria-hidden="true"
-                        />
-                      )
-                    }),
-                )}
+                  return (
+                    <div
+                      key={edge.key}
+                      className={`tech-line ${highlighted ? 'active' : ''}`}
+                      style={edge.style}
+                      aria-hidden="true"
+                    />
+                  )
+                })}
 
                 {techUniverse.map((node) => {
                   const highlighted = Boolean(
                     activeTech &&
-                      (activeTech === node.name || node.links.some((link) => link === activeTech)),
+                    (activeTech === node.name || node.links.some((link) => link === activeTech)),
                   )
 
                   return (
@@ -804,7 +896,9 @@ Continuous Learning</strong>
                 })}
                 <div className="tech-core">
                   <Sparkles size={18} />
-                  <span>Mission Stack</span>
+                  <span>
+                    AI +<br />Full-Stack
+                  </span>
                 </div>
               </div>
             </div>
@@ -833,6 +927,7 @@ Continuous Learning</strong>
                 initial="hidden"
                 whileInView="visible"
                 viewport={viewport}
+                whileHover={prefersReducedMotion ? undefined : { y: -6 }}
                 transition={{ delay: prefersReducedMotion ? 0 : index * 0.05, duration: 0.55 }}
               >
                 <div className="project-thumb">
@@ -877,15 +972,15 @@ Continuous Learning</strong>
           </div>
         </SectionShell>
 
-        <SectionShell id="achievements" label="Achievement Vault" title="Achievements" description="Counters that communicate progress without resorting to noisy visuals." icon={<Trophy size={16} />}>
+        <SectionShell id="achievements" label="Achievement Vault" title="Achievements" description="Milestones that reflect my problem-solving, technical growth and hands-on experience." icon={<Trophy size={16} />}>
           <div className="achievement-grid">
             {achievements.map((item) => {
-              const Icon = iconMap[item.iconKey as keyof typeof iconMap]
+              const Icon = iconMap[item.iconKey]
               return (
                 <motion.article
                   key={item.label}
                   className="glass-card achievement-card"
-                  whileHover={{ y: -5, scale: 1.01 }}
+                  whileHover={prefersReducedMotion ? undefined : { y: -5, scale: 1.01 }}
                 >
                   <Icon size={18} />
                   <strong>
@@ -898,131 +993,139 @@ Continuous Learning</strong>
           </div>
         </SectionShell>
 
-        <SectionShell id="experience" label="Developer Logs" title="Experience" description="A clear timeline, even if professional experience is still growing." icon={<BriefcaseBusiness size={16} />}>
-          <div className="experience-card glass-card">
+        <SectionShell
+          id="experience"
+          label="Professional Experience"
+          title="Experience"
+          description="Hands-on experience in technical coordination, AWS workshops and collaborative learning."
+          icon={<BriefcaseBusiness size={16} />}
+        >
+          <motion.div
+            className="experience-card glass-card"
+            whileHover={prefersReducedMotion ? undefined : { y: -4 }}
+            transition={{ duration: 0.25 }}
+          >
             <div className="experience-timeline">
               <div className="timeline-marker experience-marker" />
+
               <div>
-                <h3>Currently looking for internship opportunities in Software Development and Cybersecurity.</h3>
+                <div className="experience-header">
+                  <div>
+                    <h3>Tech Coordinator</h3>
+                    <p>AWS Builder Group · ABES Engineering College</p>
+                  </div>
+
+                  <span className="experience-date">
+                    Sep 2026 - Present
+                  </span>
+                </div>
+
                 <p>
-                  I&apos;m actively building portfolio projects, strengthening fundamentals and refining the ability to
-                  communicate technical work clearly to recruiters and engineering teams.
+                  Coordinating technical workshops and hands-on AWS sessions for
+                  students while collaborating with the core team to organize
+                  technical events and promote peer learning.
                 </p>
+
                 <div className="chip-row wrap">
-                  <span className="skill-chip">React</span>
-                  <span className="skill-chip">Node.js</span>
-                  <span className="skill-chip">Security Research</span>
-                  <span className="skill-chip">Networking</span>
+                  <span className="skill-chip">AWS</span>
+                  <span className="skill-chip">Technical Workshops</span>
+                  <span className="skill-chip">Event Coordination</span>
+                  <span className="skill-chip">Peer Learning</span>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </SectionShell>
 
-        <SectionShell id="resume" label="Confidential Resume" title="Resume" description="An interactive preview with download and print actions." icon={<FileText size={16} />}>
+        <SectionShell
+          id="resume"
+          label="My Resume"
+          title="Resume"
+          description="Explore my technical profile, projects, skills and career highlights."
+          icon={<FileText size={16} />}
+        >
           <div className="resume-grid">
             <div className="resume-preview glass-card">
               <div className="resume-header">
                 <div>
-                  <span>Confidential Resume</span>
+                  <span>Aman Umrao — Resume</span>
                   <h3>Aman Umrao</h3>
                 </div>
+
                 <span className="resume-badge">Internship Ready</span>
               </div>
 
               <div className="resume-stamp">
-                <div className="resume-stamp-ring" aria-hidden="true" />
-                <strong>{avatarFallback}</strong>
-                <p>Replace this block with the final resume PDF preview when available.</p>
+                <iframe
+                  ref={resumeIframeRef}
+                  src={`${resume}#toolbar=0&navpanes=0&scrollbar=0`}
+                  title="Aman Umrao Resume"
+                  className="resume-pdf"
+                />
               </div>
 
               <div className="resume-list">
                 <div>
                   <span>Focus</span>
-                  <strong>Full Stack Development, Security and Product Craft</strong>
+                  <strong>AI/ML, Full-Stack Development & Problem Solving</strong>
                 </div>
+
                 <div>
-                  <span>Strengths</span>
-                  <strong>UI Systems, API Thinking, Debugging, Ownership</strong>
+                  <span>Core Stack</span>
+                  <strong>React, Node.js, Express.js, MongoDB, Python & AWS</strong>
                 </div>
+
                 <div>
-                  <span>Goal</span>
-                  <strong>Internship in a team that values quality and learning</strong>
+                  <span>Career Goal</span>
+                  <strong>Software Development / AI-ML Internship</strong>
                 </div>
               </div>
 
               <div className="resume-actions">
                 <button className="primary-button" onClick={downloadResume}>
-                  <Download size={16} /> Download
+                  <Download size={16} /> Download Resume
                 </button>
+
                 <button className="secondary-button" onClick={printResume}>
-                  <Printer size={16} /> Print
+                  <Printer size={16} /> Print Resume
                 </button>
               </div>
             </div>
 
             <div className="resume-aside glass-card">
               <h3>Resume Highlights</h3>
+
               <ul className="resume-highlights">
                 <li>
-                  <BadgeCheck size={16} /> Clean project architecture and reusable components
+                  <BadgeCheck size={16} />
+                  900+ coding problems solved across competitive programming platforms
                 </li>
+
                 <li>
-                  <BadgeCheck size={16} /> Premium UI decisions with accessibility in mind
+                  <BadgeCheck size={16} />
+                  Hands-on experience in AI/ML and full-stack development
                 </li>
+
                 <li>
-                  <BadgeCheck size={16} /> Security curiosity across Burp Suite, Nmap and OWASP Top 10
+                  <BadgeCheck size={16} />
+                  Backend development using Node.js, Express.js, MongoDB and REST APIs
                 </li>
+
                 <li>
-                  <BadgeCheck size={16} /> Resume, portfolio and project stories that are recruiter friendly
+                  <BadgeCheck size={16} />
+                  Experience with AWS, Docker and modern developer tools
+                </li>
+
+                <li>
+                  <BadgeCheck size={16} />
+                  Tech Coordinator at AWS Builder Group
                 </li>
               </ul>
             </div>
           </div>
         </SectionShell>
 
-        <SectionShell id="research" label="Research Lab" title="Certifications" description="Hover for detail and open a preview modal when needed." icon={<GraduationCap size={16} />}>
-          <div className="cert-grid">
-            {certifications.map((cert, index) => {
-              const visual = certificationVisuals[index % certificationVisuals.length]
-              const CertIcon = visual.Icon
-
-              return (
-                <motion.button
-                  key={cert.title}
-                  className="glass-card cert-card"
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  onClick={() => setSelectedCertification(cert)}
-                >
-                  <div className="cert-topline">
-                    <div className="cert-icon" aria-hidden="true">
-                      <CertIcon size={20} />
-                    </div>
-                    <span>{visual.label}</span>
-                  </div>
-                  <div className="cert-body">
-                    <h3>{cert.title}</h3>
-                    <div className="cert-meta">
-                      <span>{cert.issuer}</span>
-                      <span>{visual.focus}</span>
-                    </div>
-                    <p>{cert.summary}</p>
-                  </div>
-                  <div className="cert-actions">
-                    <span>
-                    <FileText size={15} /> Preview
-                  </span>
-                  <span>
-                    <Download size={15} /> Download
-                  </span>
-                  </div>
-                </motion.button>
-              )
-            })}
-          </div>
-        </SectionShell>
-
-        <SectionShell id="intel" label="Developer Intelligence" title="GitHub Activity" description="Public GitHub data and a recruiter-friendly snapshot." icon={<Activity size={16} />}>
+        <SectionShell id="intel" label="Developer Intelligence" title="GitHub Activity" description="A live snapshot of my development activity, repositories and open-source work." icon={<Activity size={16} />}>
           <div className="github-grid">
             <div className="glass-card github-summary">
               <div className="section-subhead">
@@ -1052,7 +1155,7 @@ Continuous Learning</strong>
                           initial={{ width: 0 }}
                           whileInView={{ width: `${Math.max(24, 80 - index * 14)}%` }}
                           viewport={viewport}
-                          transition={{ duration: 0.65 }}
+                          transition={{ duration: prefersReducedMotion ? 0 : 0.65 }}
                         />
                       </div>
                       <strong>{language.count}</strong>
@@ -1078,17 +1181,17 @@ Continuous Learning</strong>
               aria-label="Open GitHub contribution activity"
             >
               <div className="section-subhead">
-                <span>Contribution Calendar</span>
+                <span>Contribution Activity</span>
                 <strong>
-                  Open GitHub activity
+                  View GitHub contributions
                   <ArrowUpRight size={16} />
                 </strong>
               </div>
               <div className="heatmap-grid" aria-label="Contribution calendar">
                 {githubSnapshot
                   ? githubSnapshot.contributionHeat.map((value, index) => (
-                      <span key={`${value}-${index}`} className={`heat-cell level-${value}`} />
-                    ))
+                    <span key={`${value}-${index}`} className={`heat-cell level-${value}`} />
+                  ))
                   : Array.from({ length: 84 }, (_, index) => <span key={index} className="heat-cell level-1 skeleton" />)}
               </div>
             </a>
@@ -1096,8 +1199,8 @@ Continuous Learning</strong>
             <div className="glass-card github-column">
               <div>
                 <div className="section-subhead">
-                  <span>Pinned Projects</span>
-                  <strong>Top repos by signal</strong>
+                  <span>Featured Repositories</span>
+                  <strong>My most relevant projects on GitHub</strong>
                 </div>
                 <div className="github-list">
                   {githubSnapshot ? (
@@ -1150,7 +1253,16 @@ Continuous Learning</strong>
         <SectionShell id="profiles" label="Coding Profiles" title="Coding Profiles" description="A compact overview of the places I learn, ship and practice." icon={<Radar size={16} />}>
           <div className="profile-grid">
             {profiles.map((profile) => (
-              <a key={profile.name} className="glass-card profile-card" href={profile.href} target="_blank" rel="noreferrer">
+              <motion.a
+                key={profile.name}
+                className="glass-card profile-card"
+                href={profile.href}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={prefersReducedMotion ? undefined : { y: -5, scale: 1.015 }}
+                whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="profile-badge">
                   {profile.name === 'LinkedIn' ? (
                     <LinkedInLogo />
@@ -1164,12 +1276,12 @@ Continuous Learning</strong>
                   <span>{profile.stats}</span>
                 </div>
                 <ArrowUpRight size={16} />
-              </a>
+              </motion.a>
             ))}
           </div>
         </SectionShell>
 
-        <SectionShell id="contact" label="Communication Channel" title="Contact" description="A clean split layout with direct contact info and a modern form." icon={<Mail size={16} />}>
+        <SectionShell id="contact" label="Communication Channel" title="Get In Touch" description="Have an opportunity, project idea, or just want to connect? Feel free to reach out." icon={<Mail size={16} />}>
           <div className="contact-grid">
             <div className="glass-card contact-info">
               <h3>Contact Information</h3>
@@ -1184,9 +1296,6 @@ Continuous Learning</strong>
                   <FolderGit2 size={16} /> GitHub
                 </a>
                 <span>
-                  <Phone size={16} /> {contactLinks.phone}
-                </span>
-                <span>
                   <MapPin size={16} /> {contactLinks.location}
                 </span>
               </div>
@@ -1195,7 +1304,7 @@ Continuous Learning</strong>
               </div>
             </div>
 
-            <form className="glass-card contact-form" onSubmit={handleFormSubmit}>
+            <form  id="contact-form" className="glass-card contact-form" onSubmit={handleFormSubmit}>
               <h3>Send a message</h3>
               <div className="floating-field">
                 <input id="name" name="name" type="text" placeholder=" " required />
@@ -1206,7 +1315,7 @@ Continuous Learning</strong>
                 <label htmlFor="email">Email</label>
               </div>
               <div className="floating-field">
-                <input id="subject" name="subject" type="text" placeholder=" " required />
+                <input id="subject" name="title" type="text" placeholder=" " required />
                 <label htmlFor="subject">Subject</label>
               </div>
               <div className="floating-field">
@@ -1224,7 +1333,7 @@ Continuous Learning</strong>
       <footer className="footer">
         <div>
           <strong>Aman Umrao</strong>
-          <p>Designed and developed as a mission control portfolio.</p>
+          <p>AI/ML • Full-Stack Development • Problem Solving</p>
         </div>
         <div className="footer-links">
           {navItems.slice(0, 4).map((item) => (
@@ -1246,8 +1355,22 @@ Continuous Learning</strong>
 
       <AnimatePresence>
         {commandOpen ? (
-          <motion.div className="overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div
+            className="overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setCommandOpen(false)
+              }
+            }}
+          >
             <motion.div
+              ref={commandPaletteRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="command-palette-title"
               className="command-palette glass-card"
               initial={{ opacity: 0, y: 24, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1255,7 +1378,7 @@ Continuous Learning</strong>
             >
               <div className="command-head">
                 <div>
-                  <span>Command Palette</span>
+                  <span id="command-palette-title">Command Palette</span>
                   <strong>Quick navigation and actions</strong>
                 </div>
                 <button className="icon-button" onClick={() => setCommandOpen(false)} aria-label="Close command palette">
@@ -1284,68 +1407,29 @@ Continuous Learning</strong>
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedCertification ? (
-          <motion.div className="overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div
-              className="cert-modal glass-card"
-              initial={{ opacity: 0, scale: 0.94, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 20 }}
-            >
-              <div className="command-head">
-                <div>
-                  <span>Certification Preview</span>
-                  <strong>{selectedCertification.title}</strong>
-                </div>
-                <button className="icon-button" onClick={() => setSelectedCertification(null)} aria-label="Close certification preview">
-                  <X size={16} />
-                </button>
-              </div>
-
-              <p>{selectedCertification.summary}</p>
-              <div className="preview-panel">
-                <FileText size={20} />
-                <div>
-                  <strong>{selectedCertification.issuer}</strong>
-                  <span>Preview file: {selectedCertification.fileName}</span>
-                </div>
-              </div>
-              <div className="modal-actions">
-                <button
-                  className="secondary-button"
-                  onClick={() => {
-                    const blob = new Blob([`${selectedCertification.title}\n${selectedCertification.summary}`], {
-                      type: 'text/plain;charset=utf-8',
-                    })
-                    const url = URL.createObjectURL(blob)
-                    const anchor = document.createElement('a')
-                    anchor.href = url
-                    anchor.download = selectedCertification.fileName.replace('.pdf', '.txt')
-                    anchor.click()
-                    URL.revokeObjectURL(url)
-                    setMessage('Certification preview downloaded.', 'success')
-                  }}
-                >
-                  <Download size={16} /> Download
-                </button>
-                <button className="ghost-button" onClick={() => setSelectedCertification(null)}>
-                  Close
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {toast ? (
-          <motion.div className={`toast ${toast.tone}`} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }}>
-            {toast.message}
+          <motion.div
+            role="status"
+            aria-live="polite"
+            className={`toast ${toast.tone}`}
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+          >
+            {toast.tone === 'success' ? (
+              <CheckCircle2 size={18} style={{ color: '#22c55e', flexShrink: 0 }} />
+            ) : toast.tone === 'error' ? (
+              <AlertCircle size={18} style={{ color: '#ef4444', flexShrink: 0 }} />
+            ) : (
+              <Sparkles size={18} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+            )}
+            <span>{toast.message}</span>
           </motion.div>
         ) : null}
       </AnimatePresence>
 
-      <div className="cursor-spotlight" style={{ left: `${mousePosition.x}%`, top: `${mousePosition.y}%` }} aria-hidden="true" />
+      <div ref={spotlightRef} className="cursor-spotlight" style={{ left: '50%', top: '30%' }} aria-hidden="true" />
     </div>
   )
 }
@@ -1365,6 +1449,8 @@ function SectionShell({
   icon: ReactNode
   children: ReactNode
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.section
       id={id}
@@ -1373,7 +1459,7 @@ function SectionShell({
       initial="hidden"
       whileInView="visible"
       viewport={viewport}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: 'easeOut' }}
     >
       <div className="section-heading">
         <div>
