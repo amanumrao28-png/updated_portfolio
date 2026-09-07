@@ -1,12 +1,23 @@
 # Aman Umrao — AI/ML & Full-Stack Portfolio
 
-A modern personal portfolio website built with React, TypeScript and Vite. It showcases my AI/ML learning journey, full-stack development projects, coding achievements, GitHub activity, resume and contact information.
+<p align="center">
+  <img src="https://img.shields.io/badge/AI%2FML-Developer-orange?style=for-the-badge" alt="AI/ML Developer" />
+  <img src="https://img.shields.io/badge/Full--Stack-Developer-blue?style=for-the-badge" alt="Full-Stack Developer" />
+  <img src="https://img.shields.io/badge/Problem-Solver-purple?style=for-the-badge" alt="Problem Solver" />
+</p>
+
+<p align="center">
+  A modern developer portfolio showcasing AI/ML, full-stack development,
+  problem solving, projects, achievements and technical experience.
+</p>
 
 ---
 
-## 🚀 Live Portfolio
+## 🚀 About the Project
 
-🔗 **Live Website:** Add your deployed portfolio URL here
+This is my personal portfolio website built with **React, TypeScript and Vite**.
+
+The portfolio is designed to present my technical skills, projects, coding achievements, GitHub activity, education, experience, resume and professional profiles in a modern and interactive interface.
 
 ---
 
@@ -14,41 +25,41 @@ A modern personal portfolio website built with React, TypeScript and Vite. It sh
 
 Hi, I'm **Aman Umrao**, a B.Tech Computer Science & Engineering student at **ABES Engineering College, Ghaziabad**.
 
-I am passionate about **Artificial Intelligence, Machine Learning, Full-Stack Development and Problem Solving**. I enjoy building practical applications, solving real-world problems and continuously improving my technical skills through hands-on projects and coding practice.
+I am focused on:
 
-### My Focus
+- Artificial Intelligence & Machine Learning
+- Full-Stack Development
+- Backend Development
+- Data Structures & Algorithms
+- Problem Solving
+- AWS
+- Docker
+- Building practical applications
 
-- 🤖 Artificial Intelligence & Machine Learning
-- 🌐 Full-Stack Development
-- 🧠 Data Structures & Algorithms
-- 🐍 Python & Machine Learning
-- ⚛️ React & TypeScript
-- 🟢 Node.js & Express.js
-- 🗄️ MongoDB & MySQL
-- ☁️ AWS
-- 🐳 Docker
-- 🔧 Git & GitHub
+I enjoy learning new technologies, solving programming problems and building projects that solve real-world problems.
 
 ---
 
 # ✨ Features
 
-- Modern responsive portfolio UI
-- Dark and light theme
-- Smooth animations and transitions
-- Interactive technology stack
-- Project filtering
-- GitHub API integration
-- Coding profile section
-- Education timeline
-- Experience section
-- Achievements section
-- Resume PDF preview
-- Resume download
-- Resume print functionality
-- EmailJS contact form
-- Responsive mobile navigation
-- Accessibility-friendly reduced-motion support
+- 🎨 Modern responsive portfolio UI
+- 🌙 Dark and light theme
+- ✨ Smooth animations and transitions
+- 🧩 Interactive technology universe
+- 💻 Technical skills showcase
+- 📂 Project showcase
+- 🔎 Project filtering
+- 🏆 Achievements section
+- 🎓 Education timeline
+- 💼 Experience section
+- 📄 Resume PDF preview
+- ⬇️ Resume PDF download
+- 🖨️ Resume print functionality
+- 📊 GitHub activity integration
+- 🔗 Coding and professional profiles
+- 📧 EmailJS contact form
+- 📱 Responsive mobile navigation
+- ♿ Reduced-motion accessibility support
 
 ---
 
@@ -61,8 +72,9 @@ I am passionate about **Artificial Intelligence, Machine Learning, Full-Stack De
 - Vite
 - CSS
 - Framer Motion
+- Lucide React
 
-## Backend / Development
+## Backend & Database
 
 - Node.js
 - Express.js
