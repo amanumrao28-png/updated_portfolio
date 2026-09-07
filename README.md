@@ -1,32 +1,120 @@
-# React + TypeScript + Vite
+# Aman Umrao — AI/ML & Full-Stack Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A modern personal portfolio website built with React, TypeScript and Vite. It showcases my AI/ML learning journey, full-stack development projects, coding achievements, GitHub activity, resume and contact information.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Live Portfolio
 
-## React Compiler
+🔗 **Live Website:** Add your deployed portfolio URL here
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 👨‍💻 About Me
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Hi, I'm **Aman Umrao**, a B.Tech Computer Science & Engineering student at **ABES Engineering College, Ghaziabad**.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+I am passionate about **Artificial Intelligence, Machine Learning, Full-Stack Development and Problem Solving**. I enjoy building practical applications, solving real-world problems and continuously improving my technical skills through hands-on projects and coding practice.
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### My Focus
+
+- 🤖 Artificial Intelligence & Machine Learning
+- 🌐 Full-Stack Development
+- 🧠 Data Structures & Algorithms
+- 🐍 Python & Machine Learning
+- ⚛️ React & TypeScript
+- 🟢 Node.js & Express.js
+- 🗄️ MongoDB & MySQL
+- ☁️ AWS
+- 🐳 Docker
+- 🔧 Git & GitHub
+
+---
+
+# ✨ Features
+
+- Modern responsive portfolio UI
+- Dark and light theme
+- Smooth animations and transitions
+- Interactive technology stack
+- Project filtering
+- GitHub API integration
+- Coding profile section
+- Education timeline
+- Experience section
+- Achievements section
+- Resume PDF preview
+- Resume download
+- Resume print functionality
+- EmailJS contact form
+- Responsive mobile navigation
+- Accessibility-friendly reduced-motion support
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- CSS
+- Framer Motion
+
+## Backend / Development
+
+- Node.js
+- Express.js
+- MongoDB
+- MySQL
+
+## AI / Machine Learning
+
+- Python
+- Machine Learning
+- RAG
+- LLM Applications
+
+## Tools & Deployment
+
+- Git
+- GitHub
+- AWS
+- Docker
+
+---
+
+# 📂 Project Structure
+
+```text
+Aman-Portfolio/
+│
+├── public/
+│
+├── src/
+│   │
+│   ├── assets/
+│   │   ├── profile.jpeg
+│   │   └── Resume.pdf
+│   │
+│   ├── data/
+│   │   └── portfolio.ts
+│   │
+│   ├── App.tsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.tsx
+│
+├── .dockerignore
+├── .gitignore
+├── .oxlintrc.json
+├── Dockerfile
+├── README.md
+├── index.html
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+└── vite.config.ts
